@@ -16,6 +16,7 @@ const Home = () => {
   const [inputStatus, setInputStatus] = useState("Draft");
   const [inputPrice, setInputPrice] = useState("");
   const [inputTotalSeles, setInputTotalSeles] = useState("");
+  const [editProductId, setEditProductId] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -40,15 +41,25 @@ const Home = () => {
       setFilteredData(data.filter((item) => item.status === filter));
     }
   }, [filter, data]);
+const toggleAddProduct = () => {
+  setShowProduct(!showProduct);
 
-  const toggleAddProduct = () => {
-    setShowProduct(!showProduct);
-    if (showProduct) {
-      setInputName("");
-      setInputStatus("Draft"); // Standart qiymat
-      setInputPrice("");
-      setInputTotalSeles("");
-    }
+  if (!showProduct) {
+    setInputName("");
+    setInputStatus("Draft");
+    setInputPrice("");
+    setInputTotalSeles("");
+    setEditProductId(null); 
+  }
+};
+
+  const handleEditProduct = (product) => {
+    setEditProductId(product.id);
+    setInputName(product.productName);
+    setInputStatus(product.status);
+    setInputPrice(product.price);
+    setInputTotalSeles(product.totalSeles);
+    setShowProduct(true);
   };
 
   const handleCreateProduct = async () => {
@@ -83,6 +94,43 @@ const Home = () => {
       toast.error("Mahsulotni o'chirishda xatolik yuz berdi!");
     }
   };
+const handleSaveProduct = async () => {
+  if (!inputName || !inputPrice || !inputTotalSeles) {
+    toast.error("Iltimos, barcha maydonlarni to'ldiring!");
+    return;
+  }
+
+  try {
+    if (editProductId) {
+      await axios.put(
+        `${import.meta.env.VITE_BASE_URL}/products/${editProductId}`,
+        {
+          productName: inputName,
+          status: inputStatus,
+          price: parseFloat(inputPrice),
+          totalSeles: parseInt(inputTotalSeles),
+        }
+      );
+      toast.success("Mahsulot muvaffaqiyatli yangilandi!");
+    } else {
+      await axios.post(`${import.meta.env.VITE_BASE_URL}/products`, {
+        productName: inputName,
+        status: inputStatus,
+        price: parseFloat(inputPrice),
+        totalSeles: parseInt(inputTotalSeles),
+      });
+      toast.success("Mahsulot muvaffaqiyatli qo'shildi!");
+    }
+
+    toggleAddProduct();
+    fetchData(); 
+  } catch (error) {
+    console.error(error);
+    toast.error("Amaliyotda xatolik yuz berdi!");
+  }
+};
+
+
 
   return (
     <div className="ml-[60px] bg-gray-100">
@@ -110,7 +158,7 @@ const Home = () => {
             Export
           </button>
           <button
-            onClick={toggleAddProduct}
+            onClick={handleCreateProduct}
             className="text-white font-medium px-4 py-2 rounded-lg bg-black flex items-center gap-2"
           >
             <LuCirclePlus />
@@ -146,7 +194,9 @@ const Home = () => {
           <h1>{value.totalSeles || "N/A"}</h1>
           <h1>6/23/2024</h1>
           <div className="flex items-center gap-4 pl-12">
-            <MdOutlineEdit />
+            <button onClick={() => handleEditProduct(value)}>
+              <MdOutlineEdit />
+            </button>
             <button onClick={() => handleDeleteProduct(value.id)}>
               <RiDeleteBinLine />
             </button>
@@ -216,12 +266,13 @@ const Home = () => {
                 >
                   Go Back
                 </button>
+
                 <button
                   type="button"
-                  onClick={handleCreateProduct}
+                  onClick={handleSaveProduct}
                   className="bg-[#20d472] text-white px-4 py-2 rounded-md"
                 >
-                  Save
+                  {editProductId ? "Update" : "Save"}
                 </button>
               </div>
             </form>
