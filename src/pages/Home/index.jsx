@@ -13,7 +13,7 @@ const Home = () => {
   const [showProduct, setShowProduct] = useState(false);
   const [filter, setFilter] = useState("All");
   const [inputName, setInputName] = useState("");
-  const [inputStatus, setInputStatus] = useState("");
+  const [inputStatus, setInputStatus] = useState("Draft");
   const [inputPrice, setInputPrice] = useState("");
   const [inputTotalSeles, setInputTotalSeles] = useState("");
 
@@ -23,7 +23,7 @@ const Home = () => {
         `${import.meta.env.VITE_BASE_URL}/products`
       );
       setData(response.data);
-      setFilteredData(response.data); // Dastlab barcha ma'lumotlarni ko'rsatish
+      setFilteredData(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -44,16 +44,15 @@ const Home = () => {
   const toggleAddProduct = () => {
     setShowProduct(!showProduct);
     if (showProduct) {
-     
       setInputName("");
-      setInputStatus("");
+      setInputStatus("Draft"); // Standart qiymat
       setInputPrice("");
       setInputTotalSeles("");
     }
   };
 
   const handleCreateProduct = async () => {
-    if (!inputName || !inputStatus || !inputPrice || !inputTotalSeles) {
+    if (!inputName || !inputPrice || !inputTotalSeles) {
       toast.error("Iltimos, barcha maydonlarni to'ldiring!");
       return;
     }
@@ -177,12 +176,15 @@ const Home = () => {
                 <label className="block text-sm font-medium text-gray-700">
                   Status
                 </label>
-                <input
+                <select
                   value={inputStatus}
                   onChange={(e) => setInputStatus(e.target.value)}
-                  type="text"
                   className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-                />
+                >
+                  <option value="Draft">Draft</option>
+                  <option value="Active">Active</option>
+                  <option value="Archived">Archived</option>
+                </select>
               </div>
               <div className="mb-4">
                 <label className="block text-sm font-medium text-gray-700">
