@@ -63,10 +63,7 @@ const toggleAddProduct = () => {
   };
 
   const handleCreateProduct = async () => {
-    if (!inputName || !inputPrice || !inputTotalSeles) {
-      toast.error("Iltimos, barcha maydonlarni to'ldiring!");
-      return;
-    }
+  
 
     try {
       await axios.post(`${import.meta.env.VITE_BASE_URL}/products`, {
@@ -95,10 +92,6 @@ const toggleAddProduct = () => {
     }
   };
 const handleSaveProduct = async () => {
-  if (!inputName || !inputPrice || !inputTotalSeles) {
-    toast.error("Iltimos, barcha maydonlarni to'ldiring!");
-    return;
-  }
 
   try {
     if (editProductId) {
