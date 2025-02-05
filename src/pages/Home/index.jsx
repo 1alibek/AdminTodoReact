@@ -272,7 +272,7 @@ const handleSaveProduct = async () => {
                   onClick={handleSaveProduct}
                   className="bg-[#20d472] text-white px-4 py-2 rounded-md"
                 >
-                  {editProductId ? "Update" : "Save"}
+                  {editProductId ? "Save" : "Add"}
                 </button>
               </div>
             </form>
